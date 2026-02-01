@@ -1,42 +1,41 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 import requests
 
 app = Flask(__name__)
 
-# Service URLs
-USER_SERVICE_URL = "http://localhost:4002"
-PRODUCT_SERVICE_URL = "http://localhost:4001"
+# Replace with actual VM IPs
+USER_SERVICE_URL = "http://192.168.100.10:4002"
+PRODUCT_SERVICE_URL = "http://192.168.100.11:4001"
+
+@app.route("/health", methods=["GET"])
+def health():
+    """
+    Health check endpoint for API Gateway
+    """
+    return jsonify({
+        "status": "UP",
+        "service": "API Gateway",
+        "port": 3000
+    }), 200
 
 @app.route("/users", methods=["GET"])
 def forward_users():
-    """Forward to User Service"""
-    try:
-        response = requests.get(f"{USER_SERVICE_URL}/users")
-        return jsonify(response.json())
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    response = requests.get(f"{USER_SERVICE_URL}/users")
+    return jsonify(response.json())
 
 @app.route("/products", methods=["GET"])
 def forward_products():
-    """Forward to Product Service"""
-    try:
-        response = requests.get(f"{PRODUCT_SERVICE_URL}/products")
-        return jsonify(response.json())
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    response = requests.get(f"{PRODUCT_SERVICE_URL}/products")
+    return jsonify(response.json())
 
 @app.route("/all", methods=["GET"])
 def forward_all():
-    """Forward and aggregate from both services"""
-    try:
-        users = requests.get(f"{USER_SERVICE_URL}/users").json()
-        products = requests.get(f"{PRODUCT_SERVICE_URL}/products").json()
-        return jsonify({
-            "users": users,
-            "products": products
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    users = requests.get(f"{USER_SERVICE_URL}/users").json()
+    products = requests.get(f"{PRODUCT_SERVICE_URL}/products").json()
+    return jsonify({
+        "users": users,
+        "products": products
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000)
