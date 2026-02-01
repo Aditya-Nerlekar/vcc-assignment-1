@@ -4,8 +4,8 @@ import requests
 app = Flask(__name__)
 
 # Replace with actual VM IPs
-USER_SERVICE_URL = "http://192.168.100.10:4002"
-PRODUCT_SERVICE_URL = "http://192.168.100.11:4001"
+USER_SERVICE_URL = "http://192.168.100.11:4002"
+PRODUCT_SERVICE_URL = "http://192.168.100.12:4001"
 
 @app.route("/health", methods=["GET"])
 def health():
